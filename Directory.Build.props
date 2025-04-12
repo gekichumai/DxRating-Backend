@@ -1,0 +1,37 @@
+<Project>
+
+    <!-- Project -->
+  <PropertyGroup>
+      <TargetFramework>net9.0</TargetFramework>
+      <Nullable>enable</Nullable>
+      <LangVersion>latest</LangVersion>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <NoWarn>$(NoWarn);CA1305</NoWarn>
+  </PropertyGroup>
+
+    <!-- Documentation -->
+    <PropertyGroup Condition="$(Configuration) == 'Debug'">
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <!-- Analyzer -->
+  <PropertyGroup>
+      <AnalysisLevel>9.0</AnalysisLevel>
+      <AnalysisMode>Recommended</AnalysisMode>
+      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+      <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+      <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+    <!-- Assembly Meta -->
+    <PropertyGroup>
+        <Authors>Gekichumai</Authors>
+        <Company>Gekichumai</Company>
+        <Copyright>Copyright (c) 2025 Gekichumai</Copyright>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/gekichumai/DxRating-Backend</RepositoryUrl>
+        <NeutralLanguage>en-US</NeutralLanguage>
+    </PropertyGroup>
+
+</Project>
