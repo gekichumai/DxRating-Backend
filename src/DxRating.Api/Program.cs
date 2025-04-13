@@ -11,6 +11,4 @@ var app = builder.Build();
 app.MapDefaultEndpoints();
 app.MapApiEndpoints();
 
-app.MapGet("/", () => "Hello World!");
-
-app.Run();
+await app.RunAsync();
