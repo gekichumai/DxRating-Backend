@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+      <PackageReference Include="Fluid.Core" />
+      <PackageReference Include="MailKit" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DxRating.Domain\DxRating.Domain.csproj" />
+    </ItemGroup>
+  
+    <ItemGroup>
+      <EmbeddedResource Include="Templates\EmailConfirmation.cs.liquid">
+        <DependentUpon>EmailConfirmation.cs</DependentUpon>
+      </EmbeddedResource>
+    </ItemGroup>
+  
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\en.json" />
+      <EmbeddedResource Include="Resources\ja.json" />
+      <EmbeddedResource Include="Resources\zh-hans.json" />
+      <EmbeddedResource Include="Resources\zh-hant.json" />
+    </ItemGroup>
+
+</Project>

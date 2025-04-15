@@ -1,2 +1,10 @@
+Server:
+  PublicUrl: https://api.dxrating.net
+
 OpenApi:
   Enabled: false
+
+Email:
+  From: noreply@dxrating.net
+  FromName: DXRating
+  TemplatePath:

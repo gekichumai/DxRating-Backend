@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DxRating.Database\DxRating.Database.csproj" />
+    <ProjectReference Include="..\DxRating.Services.Email\DxRating.Services.Email.csproj" />
+  </ItemGroup>
+
+</Project>

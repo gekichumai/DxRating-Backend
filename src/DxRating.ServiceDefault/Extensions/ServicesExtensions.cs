@@ -24,7 +24,7 @@ public static class ServicesExtensions
             http.AddServiceDiscovery();
         });
 
-        builder.Services.AddDistributedMemoryCache();
+        builder.AddRedisDistributedCache("Cache");
     }
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)

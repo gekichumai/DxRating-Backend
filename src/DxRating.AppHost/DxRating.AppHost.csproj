@@ -10,10 +10,16 @@
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+    <PackageReference Include="Aspire.Hosting.Valkey" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DxRating.Api\DxRating.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DxRating.Hosting.Smtp4dev\DxRating.Hosting.Smtp4dev.csproj"
+                      IsAspireProjectResource="false" />
   </ItemGroup>
 
 </Project>

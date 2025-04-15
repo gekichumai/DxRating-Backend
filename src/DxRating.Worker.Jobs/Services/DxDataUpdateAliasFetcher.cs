@@ -1,5 +1,8 @@
-﻿using System.Text.Json;
+﻿using System.Reflection;
+using System.Text.Json;
 using System.Web;
+using DxRating.Common.Extensions;
+using DxRating.Common.Utils;
 using DxRating.Worker.Jobs.Models;
 using DxRating.Worker.Jobs.Utils;
 
@@ -9,6 +12,8 @@ public class DxDataUpdateAliasFetcher
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<DxDataUpdateAliasFetcher> _logger;
+
+    private static readonly Assembly Assembly = typeof(DxDataUpdateAliasFetcher).Assembly;
 
     public DxDataUpdateAliasFetcher(HttpClient httpClient, ILogger<DxDataUpdateAliasFetcher> logger)
     {
@@ -69,7 +74,7 @@ public class DxDataUpdateAliasFetcher
 
     public async Task<Dictionary<int, List<string>>> GetAliases3Async()
     {
-        await using var stream = ResourceUtils.GetResourceAsync("aliases3.json");
+        await using var stream = Assembly.GetResourceStream("aliases3.json");
         stream.Seek(0, SeekOrigin.Begin);
 
         var doc = await JsonDocument.ParseAsync(stream);

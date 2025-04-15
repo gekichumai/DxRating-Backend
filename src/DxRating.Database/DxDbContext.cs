@@ -1,5 +1,6 @@
 ﻿using DxRating.Common.Models.Data.Enums;
 using DxRating.Database.Converter;
+using DxRating.Domain.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DxRating.Database;
@@ -36,4 +37,10 @@ public class DxDbContext(DbContextOptions<DxDbContext> options) : DbContext(opti
         configurationBuilder.Properties<DxVersionType>()
             .HaveConversion<DxVersionTypeConverter>();
     }
+
+    #region Identities
+
+    public DbSet<User> Users => Set<User>();
+
+    #endregion
 }
