@@ -8,3 +8,6 @@ Email:
   From: noreply@dxrating.net
   FromName: DXRating
   TemplatePath:
+
+Turnstile:
+  Secret: the-secret

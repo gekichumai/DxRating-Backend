@@ -28,6 +28,26 @@ public readonly struct Result<TOk, TFail>
     public bool IsOk => _success != null;
     public bool IsFail => _error != null;
 
+    public TOk GetOk()
+    {
+        if (!IsOk)
+        {
+            throw new InvalidOperationException("Result is not Ok");
+        }
+
+        return _success!;
+    }
+
+    public TFail GetFail()
+    {
+        if (!IsFail)
+        {
+            throw new InvalidOperationException("Result is not Fail");
+        }
+
+        return _error!;
+    }
+
     public static implicit operator Result<TOk, TFail>(TOk success) => Ok(success);
     public static implicit operator Result<TOk, TFail>(TFail error) => Fail(error);
 

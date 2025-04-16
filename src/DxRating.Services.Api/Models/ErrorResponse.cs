@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Http;
 
 namespace DxRating.Services.Api.Models;
 
@@ -12,16 +11,4 @@ public record ErrorResponse
 
     [JsonPropertyName("message")]
     public string Message { get; set; } = string.Empty;
-
-    public IResult InternalServerError()
-    {
-        return Results.Problem(
-            detail: this.Message,
-            statusCode: StatusCodes.Status500InternalServerError);
-    }
-
-    public IResult BadRequest()
-    {
-        return Results.BadRequest(this);
-    }
 }

@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DxRating.ServiceDefault\DxRating.ServiceDefault.csproj" />
+    <ProjectReference Include="..\DxRating.Services.Authentication\DxRating.Services.Authentication.csproj" />
+    <ProjectReference Include="..\DxRating.Services.Email\DxRating.Services.Email.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,7 +6,7 @@ public partial class Endpoints : IEndpointMapper
 {
     public static void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        var identityGroup = endpoints.MapGroup("/identity");
+        var identityGroup = endpoints.MapGroup("/auth");
 
         MapLocalAuthenticationEndpoints(identityGroup);
     }

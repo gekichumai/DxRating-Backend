@@ -11,12 +11,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 
-namespace DxRating.Services.Api;
+namespace DxRating.Services.Api.Extensions;
 
-public static class Extensions
+public static class ServiceExtensions
 {
     public static void AddApiServices(this IHostApplicationBuilder builder)
     {
@@ -51,6 +50,7 @@ public static class Extensions
         {
             options.AddDocumentTransformer<DefaultApiTransformer>();
             options.AddOperationTransformer<ApiVersionHeaderTransformer>();
+            options.AddOperationTransformer<TurnstileHeaderTransformer>();
         });
 
         builder.Services.AddHttpContextAccessor();

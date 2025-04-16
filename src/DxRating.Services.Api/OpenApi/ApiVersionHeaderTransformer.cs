@@ -11,7 +11,7 @@ public class ApiVersionHeaderTransformer : IOpenApiOperationTransformer
 
         operation.Parameters.Add(new OpenApiParameter
         {
-            Name = "X-DxRating-Api-Version",
+            Name = "X-DXRating-Api-Version",
             Required = false,
             In = ParameterLocation.Header
         });
