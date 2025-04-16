@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Net;
 
@@ -6,6 +7,7 @@ namespace DxRating.Domain.Entities.Identity;
 [Table("session")]
 public record Session
 {
+    [Key]
     [Column("id")]
     public Guid Id { get; set; }
 

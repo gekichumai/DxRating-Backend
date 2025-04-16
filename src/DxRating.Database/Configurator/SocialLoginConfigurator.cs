@@ -13,5 +13,7 @@ public class SocialLoginConfigurator : IEntityTypeConfiguration<SocialLogin>
             x.Platform,
             x.Identifier
         });
+
+        builder.HasIndex(x => x.UserId);
     }
 }
