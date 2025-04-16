@@ -1,5 +1,4 @@
 ﻿using DxRating.Common.Models.Data;
-using DxRating.Common.Models.Data.Enums;
 using DxRating.Worker.Jobs.Abstract;
 using DxRating.Worker.Jobs.Models;
 using DxRating.Worker.Jobs.Services;

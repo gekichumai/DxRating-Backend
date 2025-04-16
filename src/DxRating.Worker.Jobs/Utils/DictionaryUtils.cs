@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace DxRating.Worker.Jobs.Utils;
+﻿namespace DxRating.Worker.Jobs.Utils;
 
 public static class DictionaryUtils
 {

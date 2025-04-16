@@ -2,9 +2,7 @@
 using System.Text.Json;
 using System.Web;
 using DxRating.Common.Extensions;
-using DxRating.Common.Utils;
 using DxRating.Worker.Jobs.Models;
-using DxRating.Worker.Jobs.Utils;
 
 namespace DxRating.Worker.Jobs.Services;
 

@@ -41,25 +41,4 @@ public static class MaimaiDxAliasJsonSerializer
     {
         return JsonSerializer.Deserialize<MaimaiDxAlias>(json, Options);
     }
-
-    private static Dictionary<T, List<string>> MergeAliasList<T>(params Dictionary<T, string[]>[] aliasMaps)
-        where T : notnull
-    {
-        var merged = new Dictionary<T, List<string>>();
-
-        foreach (var aliasMap in aliasMaps)
-        {
-            foreach (var (k, v) in aliasMap)
-            {
-                if (merged.ContainsKey(k) is false)
-                {
-                    merged[k] = [];
-                }
-
-                merged[k].AddRange(v);
-            }
-        }
-
-        return merged;
-    }
 }

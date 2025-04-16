@@ -11,3 +11,50 @@ Email:
 
 Turnstile:
   Secret: the-secret
+
+Authentication:
+  Jwt:
+    Issuer: https://auth.example.com
+    Audience: https://app.example.com
+    Key: secret-key
+    AccessTokenExpire: 900
+    RefreshTokenExpire: 604800
+  OpenIdConnect:
+    - Enable: false
+      Name: openid-connect
+      DisplayName: OpenId Connect
+      Authority: https://sso.example.com/
+      ClientId: client-id
+      ClientSecret: client-secret
+      MetadataAddress: https://sso.example.com/.well-known/openid-configuration
+      Scopes:
+        - openid
+        - profile
+        - email
+      # When MetadataAddress is null, set the following values
+      AuthorizationEndpoint: https://sso.example.com/oauth2/authorize
+      TokenEndpoint: https://sso.example.com/oauth2/token
+      UserInfoEndpoint: https://sso.example.com/oauth2/userinfo
+      Claims:
+        Email: email
+        DisplayName: name
+        Identifier: sub
+  OAuthProviders:
+    - Enable: false
+      Type: Google
+      Name: google
+      DisplayName: Google
+      ClientId: client-id
+      ClientSecret: client-secret
+    - Enable: false
+      Type: Discord
+      Name: discord
+      DisplayName: Discord
+      ClientId: client-id
+      ClientSecret: client-secret
+    - Enable: false
+      Type: GitHub
+      Name: github
+      DisplayName: GitHub
+      ClientId: client-id
+      ClientSecret: client-secret

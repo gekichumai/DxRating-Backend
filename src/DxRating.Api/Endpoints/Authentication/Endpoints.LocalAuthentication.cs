@@ -11,9 +11,7 @@ public partial class Endpoints
 {
     private static void MapLocalAuthenticationEndpoints(IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/local");
-
-        group.MapPost("/register", PostRegisterAsync).RequireTurnstile("Register");
+        endpoints.MapPost("/register", PostRegisterAsync).RequireTurnstile("Register");
     }
 
     [EndpointDescription("Register new user account")]

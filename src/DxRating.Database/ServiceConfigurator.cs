@@ -8,7 +8,7 @@ using OpenTelemetry.Trace;
 
 namespace DxRating.Database;
 
-public static class Extensions
+public static class ServiceConfigurator
 {
     public static void ConfigureNpgsql(this IHostApplicationBuilder builder)
     {

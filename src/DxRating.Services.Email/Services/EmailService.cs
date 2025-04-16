@@ -40,6 +40,7 @@ public class EmailService
 
     public async Task SendAsync(string email, EmailKind kind, object model, CultureInfo cultureInfo)
     {
+        _logger.LogInformation("Sending {EmailKind} email to {EmailTo}", kind, email);
         var msg = await BuildMimeMessage(email, kind, model, cultureInfo);
         await _smtpClientService.SendAsync(msg);
     }

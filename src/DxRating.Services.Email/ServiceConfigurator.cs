@@ -6,11 +6,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace DxRating.Services.Email;
 
-public static class Configurator
+public static class ServiceConfigurator
 {
-    public static void AddEmailServices(this IHostApplicationBuilder builder)
+    public static void ConfigureEmail(this IHostApplicationBuilder builder)
     {
-        var assembly = typeof(Configurator).Assembly;
+        var assembly = typeof(ServiceConfigurator).Assembly;
         var prefix = $"{assembly.GetName().Name}.Resources.";
         var resources = assembly
             .GetManifestResourceNames()

@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
 using Asp.Versioning;
+using DxRating.Database;
 using DxRating.ServiceDefault.Extensions;
 using DxRating.Services.Api.Abstract;
-using DxRating.Services.Api.Configurator;
 using DxRating.Services.Api.Models;
 using DxRating.Services.Api.OpenApi;
+using DxRating.Services.Authentication;
+using DxRating.Services.Email;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
@@ -13,15 +15,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Scalar.AspNetCore;
 
-namespace DxRating.Services.Api.Extensions;
+namespace DxRating.Services.Api;
 
-public static class ServiceExtensions
+public static class ServiceConfigurator
 {
     public static void AddApiServices(this IHostApplicationBuilder builder)
     {
         var serviceName = builder.Configuration.GetServiceName();
 
-        builder.ConfigureIdentity();
+        builder.ConfigureNpgsql();
+        builder.ConfigureAuthentication();
+        builder.ConfigureEmail();
 
         builder.Services.AddProblemDetails();
         builder.Services.AddEndpointsApiExplorer();

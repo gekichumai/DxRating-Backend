@@ -1,24 +1,24 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using DxRating.Domain.Entities.Abstract;
 
 namespace DxRating.Domain.Entities.Identity;
 
+[Table("user")]
 public record User : AuditableEntity
 {
-    public Guid Id { get; set; }
+    [Column("user_id")]
+    public Guid UserId { get; set; }
+    [Column("email")]
     public string Email { get; set; } = null!;
+    [Column("password")]
     public string? Password { get; set; }
 
     // Email Confirmation
-    public bool EmailConfirmedAt { get; set; }
-    public string? EmailConfirmationToken { get; set; }
-    public DateTimeOffset? EmailConfirmationSentAt { get; set; }
+    [Column("email_confirmed")]
+    public bool EmailConfirmed { get; set; }
+    [Column("email_confirmed_at")]
+    public DateTimeOffset EmailConfirmedAt { get; set; }
 
-    // Recovery
-    public string? RecoveryToken { get; set; }
-    public DateTimeOffset? RecoveryTokenSentAt { get; set; }
-
-    // Email Change
-    public string? NewEmail { get; set; }
-    public string? EmailChangeToken { get; set; }
-    public DateTimeOffset? EmailChangeTokenSentAt { get; set; }
+    // Relations
+    public List<SocialLogin> SocialLogins { get; set; } = [];
 }

@@ -1,7 +1,6 @@
 using System.Text.Json;
 using DxRating.Services.Api.Filters;
 using DxRating.Services.Api.Models;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Http.Resilience;

@@ -7,13 +7,6 @@ namespace DxRating.Database;
 
 public class DxDbContext(DbContextOptions<DxDbContext> options) : DbContext(options)
 {
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        base.OnConfiguring(optionsBuilder);
-
-        optionsBuilder.UseSnakeCaseNamingConvention();
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -40,6 +33,9 @@ public class DxDbContext(DbContextOptions<DxDbContext> options) : DbContext(opti
 
     #region Identities
 
+    public DbSet<Session> Sessions => Set<Session>();
+    public DbSet<SocialLogin> SocialLogins => Set<SocialLogin>();
+    public DbSet<Token> Tokens => Set<Token>();
     public DbSet<User> Users => Set<User>();
 
     #endregion
