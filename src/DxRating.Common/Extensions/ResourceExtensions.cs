@@ -1,4 +1,5 @@
 using System.Reflection;
+using DxRating.Common.Enums;
 
 namespace DxRating.Common.Extensions;
 
@@ -27,5 +28,25 @@ public static class ResourceExtensions
         await using var stream = assembly.GetResourceStream(resourceName);
         using var reader = new StreamReader(stream);
         return await reader.ReadToEndAsync();
+    }
+
+    public static Dictionary<Language, string> GetI18NResources(this Assembly assembly, string directoryPath)
+    {
+        var prefix = $"{assembly.GetName().Name}.{directoryPath}.";
+        var resources = assembly
+            .GetManifestResourceNames()
+            .Where(x => x.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase))
+            .Where(x => x.EndsWith(".json", StringComparison.InvariantCultureIgnoreCase))
+            .Select(x =>
+            {
+                var fileName = x[prefix.Length..^5];
+                var language = CultureInfoExtensions.ParseLanguage(fileName, true);
+                var fileContent = assembly.GetResourceString($"{directoryPath}.{fileName}.json");
+
+                return (language, fileContent);
+            })
+            .ToDictionary();
+
+        return resources;
     }
 }

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <ItemGroup>
+    <PackageReference Include="TUnit" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\en.json" />
+    <EmbeddedResource Include="Resources\ja.json" />
+    <EmbeddedResource Include="Resources\test.txt" />
+    <EmbeddedResource Include="Resources\zh-hans.json" />
+    <EmbeddedResource Include="Resources\zh-hant.json" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DxRating.Common\DxRating.Common.csproj" />
+  </ItemGroup>
+</Project>

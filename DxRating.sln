@@ -44,6 +44,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DxRating.Hosting.Smtp4dev",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DxRating.Services.Email", "src\DxRating.Services.Email\DxRating.Services.Email.csproj", "{6E271E45-D7C9-4E29-8051-F54B3F099D51}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E3D65FD0-3C63-4A34-9352-D9F720C15271}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DxRating.Tests.Common", "test\DxRating.Tests.Common\DxRating.Tests.Common.csproj", "{AD479462-8EA4-403C-B057-5368B9332C9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +65,7 @@ Global
 		{9B8C0B78-AC6F-4A9A-AD8D-C3420585C894} = {2E5C0806-F77C-420C-BE93-9A7299AB07BA}
 		{1704035B-8976-4461-8C7D-3E508D0B97C7} = {2EAE87B8-B27B-4229-A541-772146931F40}
 		{6E271E45-D7C9-4E29-8051-F54B3F099D51} = {2E5C0806-F77C-420C-BE93-9A7299AB07BA}
+		{AD479462-8EA4-403C-B057-5368B9332C9D} = {E3D65FD0-3C63-4A34-9352-D9F720C15271}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7D392888-74B7-42FE-BC35-F1B6C5D94BF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -107,5 +112,9 @@ Global
 		{6E271E45-D7C9-4E29-8051-F54B3F099D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E271E45-D7C9-4E29-8051-F54B3F099D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E271E45-D7C9-4E29-8051-F54B3F099D51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD479462-8EA4-403C-B057-5368B9332C9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD479462-8EA4-403C-B057-5368B9332C9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD479462-8EA4-403C-B057-5368B9332C9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD479462-8EA4-403C-B057-5368B9332C9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

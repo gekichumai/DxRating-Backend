@@ -11,7 +11,7 @@
     </ItemGroup>
   
     <ItemGroup>
-      <EmbeddedResource Include="Templates\EmailConfirmation.cs.liquid">
+      <EmbeddedResource Include="Templates\EmailConfirmation.en.cs.liquid">
         <DependentUpon>EmailConfirmation.cs</DependentUpon>
       </EmbeddedResource>
     </ItemGroup>

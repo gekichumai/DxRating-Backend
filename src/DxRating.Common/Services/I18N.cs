@@ -27,25 +27,20 @@ public class I18N
     {
         var json = _translations[language].Clone();
 
-        if (key.Contains('.'))
+        var keys = key.Contains('.') ? key.Split('.') : [key];
+
+        foreach (var k in keys)
         {
-            var keys = key.Split('.');
-
-            foreach (var k in keys)
+            if (json.TryGetProperty(k, out var element))
             {
-                if (json.TryGetProperty(k, out var element))
-                {
-                    json = element;
-                }
-                else
-                {
-                    return key;
-                }
+                json = element;
             }
-
-            return json.GetString() ?? key;
+            else
+            {
+                return key;
+            }
         }
 
-        return json.GetProperty(key).GetString() ?? key;
+        return json.GetString() ?? key;
     }
 }
