@@ -22,6 +22,23 @@ internal static class IdentityConfigurator
         builder.ConfigureAuthorization();
     }
 
+    /*
+     *  Auth status flow
+     *
+     *  1. Local
+     *      login -> (issue SessionExchangeCookie) -> get session -> (issue UserTokenDto)
+     *         |---> (issue LocalLoginMFACookie) -> verify MFA -> (issue SessionExchangeCookie) -> get session -> (issue UserTokenDto)
+     *
+     *  2. SSO
+     *      initiate -> [redirect to the 3rd party] -> [redirect back to the API] -> (issue SessionExchangeCookie) -> get session -> (issue UserTokenDto)
+     *
+     *  3. WebAuthn
+     *      initiate assertion -> [browser assertion] -> assertion -> (issue UserTokenDto)
+     *
+     *  4. Erc4361
+     *      get challenge message -> [browser sign] -> challenge -> (issue UserTokenDto)
+     */
+
     private static void ConfigureAuthentication(this IHostApplicationBuilder builder)
     {
         JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -30,9 +47,27 @@ internal static class IdentityConfigurator
 
         var authenticationBuilder = builder.Services.AddAuthentication();
 
-        authenticationBuilder.AddCookie(AuthenticationConstants.CookieAuthenticationScheme, o =>
+        authenticationBuilder.AddCookie(AuthenticationConstants.SessionExchangeCookieScheme, o =>
         {
-            o.Cookie.Name = AuthenticationConstants.CookieName;
+            o.Cookie.Name = AuthenticationConstants.SessionExchangeCookieName;
+            o.Cookie.SameSite = SameSiteMode.None;
+            o.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+            o.Events.OnRedirectToLogin = context =>
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return Task.CompletedTask;
+            };
+            o.Events.OnRedirectToAccessDenied = context =>
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                return Task.CompletedTask;
+            };
+        });
+        authenticationBuilder.AddCookie(AuthenticationConstants.LocalMfaCookieScheme, o =>
+        {
+            o.Cookie.Name = AuthenticationConstants.LocalMfaCookieName;
             o.Cookie.SameSite = SameSiteMode.None;
             o.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
             o.ExpireTimeSpan = TimeSpan.FromMinutes(5);
@@ -75,7 +110,7 @@ internal static class IdentityConfigurator
             }
             authenticationBuilder.AddOpenIdConnect(oidc.Name, oidc.DisplayName, o =>
             {
-                o.SignInScheme = AuthenticationConstants.CookieAuthenticationScheme;
+                o.SignInScheme = AuthenticationConstants.SessionExchangeCookieScheme;
 
                 o.Scope.Clear();
                 foreach (var scope in oidc.Scopes)
@@ -133,7 +168,7 @@ internal static class IdentityConfigurator
                 case OAuthProviderType.GitHub:
                     authenticationBuilder.AddGitHub(oauth.Name, oauth.DisplayName, o =>
                     {
-                        o.SignInScheme = AuthenticationConstants.CookieAuthenticationScheme;
+                        o.SignInScheme = AuthenticationConstants.SessionExchangeCookieScheme;
                         o.ClientId = oauth.ClientId;
                         o.ClientSecret = oauth.ClientSecret;
                         o.CallbackPath = $"/auth/callback/{oauth.Name}";
@@ -145,7 +180,7 @@ internal static class IdentityConfigurator
                 case OAuthProviderType.Discord:
                     authenticationBuilder.AddDiscord(oauth.Name, oauth.DisplayName, o =>
                     {
-                        o.SignInScheme = AuthenticationConstants.CookieAuthenticationScheme;
+                        o.SignInScheme = AuthenticationConstants.SessionExchangeCookieScheme;
                         o.ClientId = oauth.ClientId;
                         o.ClientSecret = oauth.ClientSecret;
                         o.CallbackPath = $"/auth/callback/{oauth.Name}";
@@ -157,7 +192,7 @@ internal static class IdentityConfigurator
                 case OAuthProviderType.Google:
                     authenticationBuilder.AddGoogle(oauth.Name, oauth.DisplayName, o =>
                     {
-                        o.SignInScheme = AuthenticationConstants.CookieAuthenticationScheme;
+                        o.SignInScheme = AuthenticationConstants.SessionExchangeCookieScheme;
                         o.ClientId = oauth.ClientId;
                         o.ClientSecret = oauth.ClientSecret;
                         o.CallbackPath = $"/auth/callback/{oauth.Name}";

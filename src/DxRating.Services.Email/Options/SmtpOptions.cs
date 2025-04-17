@@ -48,15 +48,17 @@ public record SmtpOptions
             }
         }
 
-        var userInfo = uri.UserInfo.Split(':');
-        if (userInfo.Length != 2)
+        var userInfo = uri.UserInfo.Contains(':') ? uri.UserInfo.Split(':') : [];
+        if (userInfo.Length == 2)
+        {
+            UserName = userInfo[0];
+            Password = userInfo[1];
+        }
+        else
         {
             UserName = null;
             Password = null;
         }
-
-        UserName = userInfo[0];
-        Password = userInfo[1];
     }
 
     public string Host { get; } = "localhost";

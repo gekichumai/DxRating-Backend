@@ -3,38 +3,45 @@ using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+#region External Services
+
 var postgresqlPassword = builder.AddParameter("postgresql-password", "dxrating", secret: true);
-var valkeyPassword = builder.AddParameter("redis-password", "dxrating", secret: true);
+var redisPassword = builder.AddParameter("redis-password", "dxrating", secret: true);
 
 var postgresql = builder
     .AddPostgres("dxrating-psql", password: postgresqlPassword)
-    .WithLifetime(ContainerLifetime.Persistent)
     .WithOtlpExporter()
     .WithImageTag("17.4")
-    .WithDataVolume("dxrating-psql-data");
+    .WithDataVolume("dxrating-psql-data")
+    .AddDatabase("psql-db", "dxrating");
 
-postgresql.AddDatabase("psql-db", "dxrating");
-
-var valkey = builder
-    .AddValkey("valkey", password: valkeyPassword)
-    .WithLifetime(ContainerLifetime.Persistent)
+var redis = builder
+    .AddRedis("redis", password: redisPassword)
     .WithOtlpExporter()
-    .WithImageTag("8.1.0-alpine")
-    .WithDataVolume("dxrating-valkey-data")
+    .WithImageTag("7.4.2-alpine")
+    .WithDataVolume("dxrating-redis-data")
     .WithPersistence(TimeSpan.FromMinutes(5), 100);
 
 var smtp4dev = builder
     .AddSmtp4dev("smtp4dev")
     .WithLifetime(ContainerLifetime.Persistent)
     .WithOtlpExporter()
-    .WithImageTag("3.8.3");
+    .WithImageTag("3.8.3")
+    .WithDataVolume("dxrating-smtp-data");
+
+#endregion
+
+var migrator = builder.AddProject<DxRating_Worker_Migrator>("migrator")
+    .WithReference(postgresql, "PostgreSQL")
+    .WaitFor(postgresql);
 
 builder.AddProject<DxRating_Api>("api")
     .WithReference(postgresql, "PostgreSQL")
-    .WithReference(valkey, "Cache")
+    .WithReference(redis, "Cache")
     .WithReference(smtp4dev, "Smtp")
+    .WaitForCompletion(migrator)
     .WaitFor(postgresql)
-    .WaitFor(valkey)
+    .WaitFor(redis)
     .WaitFor(smtp4dev);
 
 var app = builder.Build();

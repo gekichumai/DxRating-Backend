@@ -5,14 +5,19 @@ public readonly struct Result<TOk, TFail>
     private readonly TOk? _success;
     private readonly TFail? _error;
 
+    public bool IsOk { get; } = false;
+    public bool IsFail { get; } = false;
+
     private Result(TOk success)
     {
         _success = success;
+        IsOk = true;
     }
 
     private Result(TFail error)
     {
         _error = error;
+        IsFail = true;
     }
 
     public static Result<TOk, TFail> Ok(TOk success)
@@ -24,9 +29,6 @@ public readonly struct Result<TOk, TFail>
     {
         return new Result<TOk, TFail>(error);
     }
-
-    public bool IsOk => _success != null;
-    public bool IsFail => _error != null;
 
     public TOk GetOk()
     {

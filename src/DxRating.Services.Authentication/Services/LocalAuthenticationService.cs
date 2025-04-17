@@ -1,8 +1,9 @@
 using DxRating.Common.Abstract;
+using DxRating.Common.Enums;
 using DxRating.Common.Extensions;
 using DxRating.Common.Options;
+using DxRating.Domain.Entities.Identity;
 using DxRating.Services.Authentication.Abstract;
-using DxRating.Services.Authentication.Enums;
 using DxRating.Services.Authentication.Utils;
 using DxRating.Services.Email.Enums;
 using DxRating.Services.Email.Services;
@@ -34,20 +35,20 @@ public class LocalAuthenticationService
         _serverOptions = configuration.GetOptions<ServerOptions>("Server");
     }
 
-    public async Task<Result<EmptyObject, AuthenticationErrorCode>> CreateUserAsync(string email, string password)
+    public async Task<Result<User, ErrorCode>> CreateUserAsync(string email, string password)
     {
         // Validate if email is already in use
         var existingUser = await _userService.GetUserByEmailAsync(email);
         if (existingUser is not null)
         {
-            return AuthenticationErrorCode.EmailAlreadyExists;
+            return ErrorCode.EmailAlreadyInUse;
         }
 
         // Validate password complexity
         var isPasswordComplexEnough = SecurityUtils.VerifyPasswordComplexity(password);
-        if (isPasswordComplexEnough)
+        if (isPasswordComplexEnough is false)
         {
-            return AuthenticationErrorCode.PasswordLowComplexity;
+            return ErrorCode.PasswordLowComplexity;
         }
 
         // Create user
@@ -62,8 +63,8 @@ public class LocalAuthenticationService
             CallbackUrl = $"{_serverOptions.PublicUrl}/api/auth/confirm?type={nameof(EmailKind.EmailConfirmation)}&token={token.VerificationToken}",
             ExpireAt = token.ExpireAt
         };
-        await _emailService.SendAsync(user.Email, EmailKind.EmailConfirmation, obj, _currentUser.CultureInfo);
+        await _emailService.SendAsync(user.Email, EmailKind.EmailConfirmation, obj, _currentUser.Language);
 
-        return new EmptyObject();
+        return user;
     }
 }

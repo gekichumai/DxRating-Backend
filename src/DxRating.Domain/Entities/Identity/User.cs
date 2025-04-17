@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DxRating.Domain.Entities.Abstract;
 
 namespace DxRating.Domain.Entities.Identity;
 
 [Table("user")]
-public record User : AuditableEntity
+public record User
 {
     [Key]
     [Column("user_id")]

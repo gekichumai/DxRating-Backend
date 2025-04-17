@@ -1,6 +1,8 @@
+using System.ComponentModel;
 using DxRating.Api.Endpoints.Authentication.Dto;
 using DxRating.Common.Extensions;
 using DxRating.Services.Api.Abstract;
+using DxRating.Services.Api.Extensions;
 using DxRating.Services.Authentication.Enums;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -13,7 +15,9 @@ public partial class Endpoints : IEndpointMapper
 {
     public static void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        var authGroup = endpoints.MapGroup("/auth");
+        var authGroup = endpoints.MapGroup("/auth")
+            .HasApiVersion(1)
+            .WithTags("Authentication");
 
         authGroup.MapGet("/providers", GetProviders);
         authGroup.MapGet("/oauth/{provider}", InitiateAuthentication);
@@ -25,16 +29,16 @@ public partial class Endpoints : IEndpointMapper
     private static Ok<List<AuthenticationProviderDto>> GetProviders(
         [FromServices] IConfiguration configuration)
     {
-        var result = GetAuthenticationProviderList(configuration);
-
-        return TypedResults.Ok(result);
+        return GetAuthenticationProviderList(configuration).ToOk();
     }
 
     [EndpointDescription("Initiate authentication")]
     private static Results<ChallengeHttpResult, NotFound> InitiateAuthentication(
         [FromServices] IConfiguration configuration,
-        [FromRoute(Name = "provider")] string provider,
-        [FromQuery(Name = "return_url")] string returnUrl)
+        [FromRoute(Name = "provider"), Description("OAuth provider name")]
+        string provider,
+        [FromQuery(Name = "return_url"), Description("The URL that will redirect to after authentication with TokenExchangeCookie set")]
+        string returnUrl)
     {
         var providers = GetAuthenticationProviderList(configuration, true);
         if (providers.Any(x => x.Name == provider) is false)

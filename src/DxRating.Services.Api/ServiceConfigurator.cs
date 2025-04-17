@@ -1,15 +1,20 @@
-﻿using System.Reflection;
+﻿using System.Globalization;
+using System.Reflection;
 using Asp.Versioning;
+using DxRating.Common.Enums;
 using DxRating.Database;
 using DxRating.ServiceDefault.Extensions;
 using DxRating.Services.Api.Abstract;
-using DxRating.Services.Api.Models;
+using DxRating.Services.Api.Extensions;
 using DxRating.Services.Api.OpenApi;
+using DxRating.Services.Api.Services;
 using DxRating.Services.Authentication;
+using DxRating.Services.Authentication.Abstract;
 using DxRating.Services.Email;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +31,8 @@ public static class ServiceConfigurator
         builder.ConfigureNpgsql();
         builder.ConfigureAuthentication();
         builder.ConfigureEmail();
+
+        builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
         builder.Services.AddProblemDetails();
         builder.Services.AddEndpointsApiExplorer();
@@ -53,7 +60,7 @@ public static class ServiceConfigurator
         builder.Services.AddOpenApi(serviceName, options =>
         {
             options.AddDocumentTransformer<DefaultApiTransformer>();
-            options.AddOperationTransformer<ApiVersionHeaderTransformer>();
+            options.AddOperationTransformer<DefaultHeaderTransformer>();
             options.AddOperationTransformer<TurnstileHeaderTransformer>();
         });
 
@@ -71,7 +78,7 @@ public static class ServiceConfigurator
                 var exception = ctx.Features.Get<IExceptionHandlerFeature>()?.Error;
                 var exceptionName = exception?.GetType().Name ?? "Unknown";
                 var msg = exception?.Message ?? "Unknown exception issue";
-                var resp = new ErrorResponse($"{exceptionName}: {msg}");
+                var resp = ErrorCode.Unknown.ToResponse($"{exceptionName}: {msg}");
                 ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 await ctx.Response.WriteAsJsonAsync(resp);
             });
@@ -79,11 +86,38 @@ public static class ServiceConfigurator
         app.UseStatusCodePages(async ctx =>
         {
             var code = ctx.HttpContext.Response.StatusCode;
-            var msg = new ErrorResponse($"Failed: Get status code {code}");
+            var msg = ErrorCode.Unknown.ToResponse($"Failed: Get status code {code}");
             await ctx.HttpContext.Response.WriteAsJsonAsync(msg);
         });
 
         app.UseCors();
+
+        var supportedCultures = new List<CultureInfo>
+        {
+            new("en"),
+            new("ja"),
+            new("zh-Hans"),
+            new("zh-Hant")
+        };
+
+        app.UseRequestLocalization(options =>
+        {
+            options.DefaultRequestCulture = new RequestCulture("en-US");
+            options.SupportedCultures = supportedCultures;
+            options.SupportedUICultures = supportedCultures;
+            options.RequestCultureProviders =
+            [
+                new CustomRequestCultureProvider(ctx =>
+                {
+                    var language = ctx.Request.Headers.TryGetValue("X-DXRating-Language", out var lang)
+                        ? lang.ToString()
+                        : null;
+
+                    return Task.FromResult(language is null ? null : new ProviderCultureResult(language));
+                }),
+                new AcceptLanguageHeaderRequestCultureProvider()
+            ];
+        });
 
         app.UseAuthentication();
         app.UseAuthorization();

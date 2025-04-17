@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Http" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Riok.Mapperly" />
     <PackageReference Include="Scalar.AspNetCore" />
   </ItemGroup>
 

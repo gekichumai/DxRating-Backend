@@ -10,4 +10,10 @@
     <ProjectReference Include="..\DxRating.Services.Api\DxRating.Services.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings*.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

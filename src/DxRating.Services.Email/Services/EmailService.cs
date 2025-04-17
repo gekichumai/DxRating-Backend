@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
-using System.Globalization;
 using System.Reflection;
+using DxRating.Common.Enums;
 using DxRating.Common.Extensions;
 using DxRating.Common.Services;
 using DxRating.Services.Email.Enums;
@@ -38,19 +38,19 @@ public class EmailService
         _emailOptions = configuration.GetOptions<EmailOptions>("Email");
     }
 
-    public async Task SendAsync(string email, EmailKind kind, object model, CultureInfo cultureInfo)
+    public async Task SendAsync(string email, EmailKind kind, object model, Language language)
     {
         _logger.LogInformation("Sending {EmailKind} email to {EmailTo}", kind, email);
-        var msg = await BuildMimeMessage(email, kind, model, cultureInfo);
+        var msg = await BuildMimeMessage(email, kind, model, language);
         await _smtpClientService.SendAsync(msg);
     }
 
-    private async Task<MimeMessage> BuildMimeMessage(string email, EmailKind kind, object model, CultureInfo cultureInfo)
+    private async Task<MimeMessage> BuildMimeMessage(string email, EmailKind kind, object model, Language language)
     {
-        var template = await GetTemplateAsync(kind, cultureInfo);
+        var template = await GetTemplateAsync(kind, language);
 
         var html = await template.RenderAsync(new TemplateContext(model));
-        var subject = _i18N.Get(kind.ToString(), cultureInfo);
+        var subject = _i18N.Get(kind.ToString(), language);
 
         if (string.IsNullOrEmpty(html) || string.IsNullOrEmpty(subject) || subject == kind.ToString())
         {
@@ -72,9 +72,9 @@ public class EmailService
         return msg;
     }
 
-    private async Task<IFluidTemplate> GetTemplateAsync(EmailKind kind, CultureInfo cultureInfo)
+    private async Task<IFluidTemplate> GetTemplateAsync(EmailKind kind, Language language)
     {
-        var key = $"{kind}.{cultureInfo.ParseLanguage().ToLocaleString()}";
+        var key = $"{kind}-{language.ToLocaleString()}";
         if (_templateCache.TryGetValue(key, out var value))
         {
             return value;
@@ -92,7 +92,7 @@ public class EmailService
 
         if (string.IsNullOrEmpty(template))
         {
-            template = await Assembly.GetResourceStringAsync($"Templates.{key}.cs.liquid");
+            template = await Assembly.GetResourceStringAsync($"Resources.Templates.{key}.liquid");
         }
 
         FluidParser.TryParse(template, out var fluidTemplate, out var error);

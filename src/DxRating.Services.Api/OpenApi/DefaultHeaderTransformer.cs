@@ -3,7 +3,7 @@ using Microsoft.OpenApi.Models;
 
 namespace DxRating.Services.Api.OpenApi;
 
-public class ApiVersionHeaderTransformer : IOpenApiOperationTransformer
+public class DefaultHeaderTransformer : IOpenApiOperationTransformer
 {
     public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
     {
@@ -13,7 +13,16 @@ public class ApiVersionHeaderTransformer : IOpenApiOperationTransformer
         {
             Name = "X-DXRating-Api-Version",
             Required = false,
-            In = ParameterLocation.Header
+            In = ParameterLocation.Header,
+            Description = "API version."
+        });
+
+        operation.Parameters.Add(new OpenApiParameter
+        {
+            Name = "X-DXRating-Language",
+            Required = false,
+            In = ParameterLocation.Header,
+            Description = "Client language. Will override the language set in Accept-Language header."
         });
 
         return Task.CompletedTask;

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Hosting" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\DxRating.Database\DxRating.Database.csproj" />
+      <ProjectReference Include="..\DxRating.ServiceDefault\DxRating.ServiceDefault.csproj" />
+    </ItemGroup>
+</Project>

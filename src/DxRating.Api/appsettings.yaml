@@ -10,13 +10,14 @@ Email:
   TemplatePath:
 
 Turnstile:
+  Enabled: false
   Secret: the-secret
 
 Authentication:
   Jwt:
     Issuer: https://auth.example.com
     Audience: https://app.example.com
-    Key: secret-key
+    Key: use-a-very-long-string-that-is-at-least-128-bytes-here-or-jwt-will-failed-to-be-created
     AccessTokenExpire: 900
     RefreshTokenExpire: 604800
   OpenIdConnect:

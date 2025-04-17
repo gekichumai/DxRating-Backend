@@ -1,6 +1,7 @@
 using DxRating.Api.Endpoints.Authentication.Dto;
 using DxRating.Services.Api.Extensions;
 using DxRating.Services.Api.Models;
+using DxRating.Services.Authentication.Abstract;
 using DxRating.Services.Authentication.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -15,19 +16,30 @@ public partial class Endpoints
     }
 
     [EndpointDescription("Register new user account")]
-    private static async Task<Results<Ok, BadRequest<ErrorResponse>>> PostRegisterAsync(
+    private static async Task<Results<Ok<UserTokenDto>, BadRequest<ErrorResponse>>> PostRegisterAsync(
         [FromBody] UserRegisterDto userRegisterDto,
-        [FromServices] LocalAuthenticationService localAuthenticationService)
+        [FromServices] ICurrentUser currentUser,
+        [FromServices] LocalAuthenticationService localAuthenticationService,
+        [FromServices] SessionService sessionService)
     {
-        var result = await localAuthenticationService.CreateUserAsync(
+        var registerResult = await localAuthenticationService.CreateUserAsync(
             userRegisterDto.Email,
             userRegisterDto.Password);
 
-        if (result.IsFail)
+        if (registerResult.IsFail)
         {
-            return TypedResults.BadRequest(new ErrorResponse(result.GetFail().ToString()));
+            return registerResult.GetFail().ToResponse().ToBadRequest();
         }
 
-        return TypedResults.Ok();
+        var user = registerResult.GetOk();
+        var session = await sessionService.CreateSessionAsync(user);
+
+        return new UserTokenDto
+        {
+            AccessToken = session.AccessToken,
+            RefreshToken = session.RefreshToken,
+            AccessTokenExpiresAt = session.AccessTokenExpireAt,
+            RefreshTokenExpiresAt = session.RefreshTokenExpireAt
+        }.ToOk();
     }
 }

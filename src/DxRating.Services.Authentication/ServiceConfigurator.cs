@@ -12,5 +12,8 @@ public static class ServiceConfigurator
         builder.ConfigureIdentity();
 
         builder.Services.AddScoped<LocalAuthenticationService>();
+        builder.Services.AddScoped<SessionService>();
+        builder.Services.AddScoped<TokenService>();
+        builder.Services.AddScoped<UserService>();
     }
 }

@@ -14,7 +14,7 @@ public class AuthenticationOptions
 
 public record JwtOptions
 {
-    private static string RuntimeJwtDefaultKey => RandomUtils.GetRandomAlphaNumericString(32);
+    private static string RuntimeJwtDefaultKey => RandomUtils.GetRandomByteString(128);
 
     public string Issuer { get; set; } = "https://example.com";
 

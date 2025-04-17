@@ -9,11 +9,9 @@
     <ItemGroup>
       <ProjectReference Include="..\DxRating.Domain\DxRating.Domain.csproj" />
     </ItemGroup>
-  
+
     <ItemGroup>
-      <EmbeddedResource Include="Templates\EmailConfirmation.en.cs.liquid">
-        <DependentUpon>EmailConfirmation.cs</DependentUpon>
-      </EmbeddedResource>
+      <EmbeddedResource Include="Resources\Templates\EmailConfirmation-en.liquid" />
     </ItemGroup>
   
     <ItemGroup>

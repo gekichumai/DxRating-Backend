@@ -17,7 +17,8 @@ public class TurnstileHeaderTransformer : IOpenApiOperationTransformer
             {
                 Name = "X-DXRating-Turnstile-Response",
                 Required = true,
-                In = ParameterLocation.Header
+                In = ParameterLocation.Header,
+                Description = "Turnstile response."
             });
         }
 

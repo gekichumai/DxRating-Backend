@@ -26,6 +26,11 @@ public static class Smtp4devResourceBuilderExtension
                 port: smtpPort,
                 name: Smtp4devResource.SmtpEndpointName);
     }
+
+    public static IResourceBuilder<Smtp4devResource> WithDataVolume(this IResourceBuilder<Smtp4devResource> builder, string name)
+    {
+        return builder.WithVolume(name, "/smtp4dev");
+    }
 }
 
 internal static class Smtp4devContainerImageTags

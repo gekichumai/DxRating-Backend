@@ -1,5 +1,6 @@
-using System.Globalization;
+using System.Net;
 using System.Security.Claims;
+using DxRating.Common.Enums;
 using DxRating.Domain.Entities.Identity;
 using DxRating.Services.Authentication.Enums;
 
@@ -7,16 +8,19 @@ namespace DxRating.Services.Authentication.Abstract;
 
 public interface ICurrentUser
 {
-    public Task AuthenticateAsync(string authenticationScheme);
-    public Task SignOutAsync(string authenticationScheme);
-
+    public Guid? UserId { get; }
     public ClaimsPrincipal? Principal { get; set; }
-    public bool IsAuthenticated { get; set; }
-    public string? AuthenticationScheme { get; set; }
-    public IdentityProviderType IdentityProviderType { get; set; }
-    public Guid? UserId { get; set; }
+    public bool IsAuthenticated { get; }
 
-    public CultureInfo CultureInfo { get; set;  }
+    public string? AuthenticationScheme { get; }
+    public IdentityProviderType? IdentityProviderType { get; }
+
+    public IPAddress? IpAddress { get; }
+    public string? UserAgent { get; }
+    public Language Language { get; }
 
     public Task<User?> GetUserAsync();
+    public IQueryable<User> GetUserQueryable();
+    public Task AuthenticateAsync(string authenticationScheme);
+    public Task SignOutAsync(string authenticationScheme);
 }
