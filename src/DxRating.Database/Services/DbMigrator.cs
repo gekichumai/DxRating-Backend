@@ -17,7 +17,7 @@ public class DbMigrator
     private const string ActivitySourceName = "Migrations";
     private static readonly ActivitySource ActivitySource = new(ActivitySourceName);
 
-    private DbMigrator(
+    public DbMigrator(
         ILogger<DbMigrator> logger,
         IServiceProvider serviceProvider,
         IHostEnvironment hostEnvironment)
