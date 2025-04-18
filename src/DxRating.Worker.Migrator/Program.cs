@@ -12,6 +12,7 @@ if (EF.IsDesignTime is false)
 }
 
 builder.ConfigureNpgsql();
+builder.Services.AddDbMigrator();
 
 var app = builder.Build();
 
