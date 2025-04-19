@@ -31,6 +31,8 @@ public partial class Endpoints : IEndpointMapper
         // Local
         authGroup.MapPost("/register", RegisterAsync).RequireTurnstile("Register");
         authGroup.MapPost("/login", LoginAsync).RequireTurnstile("Login");
+        authGroup.MapPut("/logout", LogoutCurrentSessionAsync).RequireBearerAuth();
+        authGroup.MapDelete("/logout/{sessionId:guid}", LogoutSessionAsync).RequireBearerAuth();
 
         // Session
         var sessionGroup = authGroup.MapGroup("/session");

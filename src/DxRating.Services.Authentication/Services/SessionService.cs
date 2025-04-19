@@ -10,6 +10,7 @@ using DxRating.Database;
 using DxRating.Domain.Entities.Identity;
 using DxRating.Services.Authentication.Models;
 using DxRating.Services.Authentication.Options;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -108,6 +109,16 @@ public class SessionService
             AccessTokenExpireAt = accessTokenExpireAt,
             RefreshTokenExpireAt = refreshTokenExpireAt
         };
+    }
+
+    public async Task LogoutSessionAsync(Guid sessionId)
+    {
+        var session = await _dbContext.Sessions.FirstOrDefaultAsync(x => x.Id == sessionId);
+        if (session is not null)
+        {
+            _dbContext.Sessions.Remove(session);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 
     public List<Claim> GetCommonClaims(User user)

@@ -121,6 +121,54 @@ public partial class Endpoints
         }
     }
 
+    [EndpointDescription("Refresh session using refresh token")]
+    private static async Task<Results<Ok<UserTokenDto>, BadRequest<ErrorResponse>>> RefreshSessionAsync(
+        [FromBody] RefreshSessionDto refreshSessionDto,
+        [FromServices] SessionService sessionService)
+    {
+        var refreshResult = await sessionService.RefreshSessionAsync(refreshSessionDto.RefreshToken);
+        if (refreshResult.IsFail)
+        {
+            return refreshResult.GetFail().ToResponse().ToBadRequest();
+        }
+
+        var session = refreshResult.GetOk();
+        return session.MapToUserTokenDto().ToOk();
+    }
+
+    [EndpointDescription("Logout current session")]
+    private static async Task<EmptyHttpResult> LogoutCurrentSessionAsync(
+        [FromServices] ICurrentUser currentUser,
+        [FromServices] SessionService sessionService,
+        [FromServices] IHttpContextAccessor httpContextAccessor)
+    {
+        var sessionIdStr = currentUser.Principal?.FindFirstValue("id");
+        if (string.IsNullOrEmpty(sessionIdStr))
+        {
+            return TypedResults.Empty;
+        }
+
+        var canParse = Guid.TryParse(sessionIdStr, out var sessionId);
+        if (canParse is false)
+        {
+            return TypedResults.Empty;
+        }
+
+        await sessionService.LogoutSessionAsync(sessionId);
+
+        return TypedResults.Empty;
+    }
+
+
+    [EndpointDescription("Logout a specific session")]
+    private static async Task<EmptyHttpResult> LogoutSessionAsync(
+        [FromRoute] Guid sessionId,
+        [FromServices] SessionService sessionService)
+    {
+        await sessionService.LogoutSessionAsync(sessionId);
+        return TypedResults.Empty;
+    }
+
     private static async Task SignOutSessionExchangeCookieCookie(HttpContext httpContext)
     {
         await httpContext.SignOutAsync(AuthenticationConstants.SessionExchangeCookieScheme);
