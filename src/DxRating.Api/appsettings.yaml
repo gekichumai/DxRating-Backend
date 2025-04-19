@@ -1,5 +1,7 @@
 Server:
   PublicUrl: https://api.dxrating.net
+  FrontendUrl: https://dxrating.net
+  DefaultEmailDomain: example.com
 
 OpenApi:
   Enabled: false
@@ -59,3 +61,14 @@ Authentication:
       DisplayName: GitHub
       ClientId: client-id
       ClientSecret: client-secret
+  WebAuthn:
+    Enable: true
+    ServerDomain: https://auth.example.com
+    ServerName: AuthDemo
+    ServerIcon: https://auth.example.com/images/icon.png
+    Origins:
+      - https://app.example.com
+  Erc4361:
+    Enable: true
+    FullyQualifiedDomainName: http://localhost:3000
+    Uri: http://localhost:3000

@@ -233,7 +233,7 @@ internal static class IdentityConfigurator
 
         var authorizationBuilder = builder.Services.AddAuthorizationBuilder();
 
-        authorizationBuilder.AddDefaultPolicy("Default", o =>
+        authorizationBuilder.AddDefaultPolicy(AuthenticationConstants.BearerAuthenticationPolicy, o =>
         {
             o.AddAuthenticationSchemes(AuthenticationConstants.BearerAuthenticationScheme).RequireAuthenticatedUser();
         });

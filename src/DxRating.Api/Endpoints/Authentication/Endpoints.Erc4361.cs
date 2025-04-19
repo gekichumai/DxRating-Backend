@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using DxRating.Api.Endpoints.Authentication.Dto;
 using DxRating.Common.Enums;
 using DxRating.Common.Extensions;
+using DxRating.Common.Options;
 using DxRating.Common.Utils;
 using DxRating.Domain.Entities.Identity;
 using DxRating.Services.Api.Extensions;
@@ -71,6 +72,7 @@ public partial class Endpoints
         [FromServices] IDistributedCache distributedCache,
         [FromServices] IUserService userService,
         [FromServices] SessionService sessionService,
+        [FromServices] IConfiguration configuration,
         [FromServices] CurrentUser currentUser)
     {
         var cacheKey = GetErc4361ChallengeCacheKey(dto.ChallengeId);
@@ -125,8 +127,9 @@ public partial class Endpoints
 
         // Create a new user
         {
+            var serverOptions = configuration.GetOptions<ServerOptions>("Server");
             var userId = Guid.NewGuid();
-            var email = $"wallet_{address}@auth-demo.example.com";
+            var email = $"wallet_{address}@{serverOptions.DefaultEmailDomain}";
             var user = await userService.CreateUserFromExternalAsync(userId, email,
                 cryptoWallets: [
                     new CryptoWallet

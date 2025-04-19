@@ -34,12 +34,12 @@ public partial class Endpoints : IEndpointMapper
 
         // Session
         var sessionGroup = authGroup.MapGroup("/session");
-        sessionGroup.MapGet("/", GetSessionAsync);
+        sessionGroup.MapGet("/", GetSessionAsync).RequireSessionExchangeCookie();
 
         // WebAuthn
         var webAuthnGroup = authGroup.MapGroup("/webauthn");
-        webAuthnGroup.MapGet("/attestation", AttestationAsync).RequireAuthorization();
-        webAuthnGroup.MapPost("/attestation", AttestationVerifyAsync);
+        webAuthnGroup.MapGet("/attestation", AttestationAsync).RequireBearerAuth();
+        webAuthnGroup.MapPost("/attestation", AttestationVerifyAsync).RequireBearerAuth();
         webAuthnGroup.MapGet("/assertion", AssertionAsync);
         webAuthnGroup.MapPost("/assertion", AssertionVerifyAsync);
     }
