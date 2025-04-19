@@ -17,14 +17,25 @@ public enum ErrorCode
 
     #region Authentication
 
-    // Auth
+    // Local
     EmailAlreadyInUse,
     PasswordLowComplexity,
     InvalidCredentials,
 
+    // WebAuthn
+    InvalidAttestationId,
+    InvalidAssertionId,
+    InvalidDescriptorId,
+
+    // Erc4361
+    InvalidErc4361ChallengeId,
+    InvalidErc4361SignatureSigner,
+    InvalidErc4361Signature,
+
     // Session
     SessionExpired,
     RefreshTokenExpired,
+    InvalidAuthenticationScheme,
 
     // User
     UserNotFound,

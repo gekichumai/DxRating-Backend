@@ -4,10 +4,12 @@
     <PackageReference Include="AspNet.Security.OAuth.Discord" />
     <PackageReference Include="AspNet.Security.OAuth.GitHub" />
     <PackageReference Include="BCrypt.Net-Next" />
+    <PackageReference Include="Fido2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Nethereum.Signer" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,6 +10,10 @@ public class AuthenticationOptions
     public List<OpenIdConnectOptions> OpenIdConnect { get; set; } = [];
 
     public List<OAuthProviderOptions> OAuthProviders { get; set; } = [];
+
+    public WebAuthnOptions WebAuthn { get; set; } = new();
+
+    public Erc4361Options Erc4361 { get; set; } = new();
 }
 
 public record JwtOptions
@@ -70,4 +74,26 @@ public class ClaimsOptions
     public string DisplayName { get; set; } = "name";
 
     public string Identifier { get; set; } = "sub";
+}
+
+public record Erc4361Options
+{
+    public bool Enable { get; set; }
+
+    public string FullyQualifiedDomainName { get; set; } = "localhost";
+
+    public string Uri { get; set; } = "https://localhost:7274";
+}
+
+public record WebAuthnOptions
+{
+    public bool Enable { get; set; }
+
+    public string ServerDomain { get; set; } = string.Empty;
+
+    public string ServerName { get; set; } = string.Empty;
+
+    public string? ServerIcon { get; set; }
+
+    public List<string> Origins { get; set; } = [];
 }

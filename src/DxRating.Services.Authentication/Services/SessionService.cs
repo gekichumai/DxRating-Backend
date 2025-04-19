@@ -38,13 +38,8 @@ public class SessionService
     public async Task<SessionTokenDescriptor> CreateSessionAsync(User user, string? ua = null, IPAddress? ipAddress = null)
     {
         var sessionId = Guid.NewGuid();
-        var claims = new List<Claim>
-        {
-            new("id", sessionId.ToString()),
-            new("sub", user.UserId.ToString()),
-            new("email", user.Email),
-            new("email_confirmed", user.EmailConfirmed.ToString().ToLowerInvariant())
-        };
+        var claims = GetCommonClaims(user);
+        claims.Add(new Claim("id", sessionId.ToString()));
 
         var now = _timeProvider.GetUtcNow();
         var accessTokenExpireAt = now.AddSeconds(_jwtOptions.AccessTokenExpire);
@@ -113,6 +108,16 @@ public class SessionService
             AccessTokenExpireAt = accessTokenExpireAt,
             RefreshTokenExpireAt = refreshTokenExpireAt
         };
+    }
+
+    public List<Claim> GetCommonClaims(User user)
+    {
+        return
+        [
+            new Claim("sub", user.UserId.ToString()),
+            new Claim("email", user.Email),
+            new Claim("email_confirmed", user.EmailConfirmed.ToString().ToLowerInvariant())
+        ];
     }
 
     private string GenerateAccessToken(IEnumerable<Claim> claims, DateTimeOffset expireAt)

@@ -11,4 +11,8 @@ public static class AuthenticationConstants
     public const string SessionExchangeCookieScheme = "session-exchange-cookie";
     public const string LocalMfaCookieScheme = "local-mfa-cookie";
     public const string BearerAuthenticationScheme = "bearer";
+
+    public const string SessionExchangePolicy = "policy-session-exchange";
+    public const string LocalMfaPolicy = "policy-local-mfa";
+    public const string BearerAuthenticationPolicy = "Default";
 }

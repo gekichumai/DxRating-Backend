@@ -19,12 +19,12 @@ public record UserTokenDto
     /// <summary>
     /// When the access token expires.
     /// </summary>
-    [JsonPropertyName("access_token_expires_at")]
-    public DateTimeOffset AccessTokenExpiresAt { get; set; }
+    [JsonPropertyName("access_token_expire_at")]
+    public DateTimeOffset AccessTokenExpireAt { get; set; }
 
     /// <summary>
     /// When the refresh token expires.
     /// </summary>
-    [JsonPropertyName("refresh_token_expires_at")]
-    public DateTimeOffset RefreshTokenExpiresAt { get; set; }
+    [JsonPropertyName("refresh_token_expire_at")]
+    public DateTimeOffset RefreshTokenExpireAt { get; set; }
 }

@@ -7,7 +7,6 @@ using DxRating.Domain.Entities.Identity;
 using DxRating.Services.Authentication.Abstract;
 using DxRating.Services.Authentication.Constants;
 using DxRating.Services.Authentication.Enums;
-using DxRating.Services.Authentication.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
@@ -16,9 +15,9 @@ namespace DxRating.Services.Api.Services;
 public class CurrentUser : ICurrentUser
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
 
-    public CurrentUser(IHttpContextAccessor httpContextAccessor, UserService userService)
+    public CurrentUser(IHttpContextAccessor httpContextAccessor, IUserService userService)
     {
         _httpContextAccessor = httpContextAccessor;
         _userService = userService;
@@ -78,20 +77,10 @@ public class CurrentUser : ICurrentUser
         return await _userService.GetUserAsync(UserId.Value);
     }
 
-    public IQueryable<User> GetUserQueryable()
-    {
-        return _userService.GetUserQueryable();
-    }
-
     public async Task AuthenticateAsync(string authenticationScheme)
     {
         var result = await _httpContextAccessor.HttpContext!.AuthenticateAsync(authenticationScheme);
 
         Principal = result.Principal;
-    }
-
-    public async Task SignOutAsync(string authenticationScheme)
-    {
-        await _httpContextAccessor.HttpContext!.SignOutAsync(authenticationScheme);
     }
 }

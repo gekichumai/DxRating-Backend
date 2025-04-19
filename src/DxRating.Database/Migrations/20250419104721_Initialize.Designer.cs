@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DxRating.Database.Migrations
 {
     [DbContext(typeof(DxDbContext))]
-    [Migration("20250417162740_Initialize")]
+    [Migration("20250419104721_Initialize")]
     partial class Initialize
     {
         /// <inheritdoc />
@@ -25,6 +25,23 @@ namespace DxRating.Database.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("DxRating.Domain.Entities.Identity.CryptoWallet", b =>
+                {
+                    b.Property<string>("Address")
+                        .HasColumnType("text")
+                        .HasColumnName("address");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Address");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("crypto_wallet");
+                });
 
             modelBuilder.Entity("DxRating.Domain.Entities.Identity.Session", b =>
                 {
@@ -113,24 +130,25 @@ namespace DxRating.Database.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasAnnotation("Relational:JsonPropertyName", "id");
+                        .HasColumnName("id");
 
                     b.Property<DateTimeOffset>("ExpiresAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasAnnotation("Relational:JsonPropertyName", "expires_at");
+                        .HasColumnName("expires_at");
 
-                    b.Property<int>("TokenType")
-                        .HasColumnType("integer")
-                        .HasAnnotation("Relational:JsonPropertyName", "token_type");
+                    b.Property<string>("TokenType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("token_type");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
-                        .HasAnnotation("Relational:JsonPropertyName", "user_id");
+                        .HasColumnName("user_id");
 
                     b.Property<string>("VerificationToken")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasAnnotation("Relational:JsonPropertyName", "verification_token");
+                        .HasColumnName("verification_token");
 
                     b.HasKey("Id");
 
@@ -141,6 +159,30 @@ namespace DxRating.Database.Migrations
                     b.HasIndex("VerificationToken");
 
                     b.ToTable("token");
+                });
+
+            modelBuilder.Entity("DxRating.Domain.Entities.Identity.Totp", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Secret")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("secret");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("totp");
                 });
 
             modelBuilder.Entity("DxRating.Domain.Entities.Identity.User", b =>
@@ -163,6 +205,10 @@ namespace DxRating.Database.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("email_confirmed_at");
 
+                    b.Property<bool>("MfaEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("mfa_enabled");
+
                     b.Property<string>("Password")
                         .HasColumnType("text")
                         .HasColumnName("password");
@@ -174,10 +220,61 @@ namespace DxRating.Database.Migrations
                     b.ToTable("user");
                 });
 
+            modelBuilder.Entity("DxRating.Domain.Entities.Identity.WebAuthnDevice", b =>
+                {
+                    b.Property<byte[]>("DescriptorId")
+                        .HasColumnType("bytea")
+                        .HasColumnName("descriptor_id");
+
+                    b.Property<Guid>("AaGuid")
+                        .HasColumnType("uuid")
+                        .HasColumnName("aa_guid");
+
+                    b.Property<string>("CredType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("cred_type");
+
+                    b.Property<byte[]>("PublicKey")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("public_key");
+
+                    b.Property<long>("SignatureCounter")
+                        .HasColumnType("bigint")
+                        .HasColumnName("signature_counter");
+
+                    b.Property<byte[]>("UserHandle")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("user_handle");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("DescriptorId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("webauthn_device");
+                });
+
+            modelBuilder.Entity("DxRating.Domain.Entities.Identity.CryptoWallet", b =>
+                {
+                    b.HasOne("DxRating.Domain.Entities.Identity.User", "User")
+                        .WithMany("CryptoWallets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DxRating.Domain.Entities.Identity.Session", b =>
                 {
                     b.HasOne("DxRating.Domain.Entities.Identity.User", "User")
-                        .WithMany()
+                        .WithMany("Sessions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -207,9 +304,39 @@ namespace DxRating.Database.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DxRating.Domain.Entities.Identity.Totp", b =>
+                {
+                    b.HasOne("DxRating.Domain.Entities.Identity.User", "User")
+                        .WithOne("Totp")
+                        .HasForeignKey("DxRating.Domain.Entities.Identity.Totp", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DxRating.Domain.Entities.Identity.WebAuthnDevice", b =>
+                {
+                    b.HasOne("DxRating.Domain.Entities.Identity.User", "User")
+                        .WithMany("WebAuthnDevices")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DxRating.Domain.Entities.Identity.User", b =>
                 {
+                    b.Navigation("CryptoWallets");
+
+                    b.Navigation("Sessions");
+
                     b.Navigation("SocialLogins");
+
+                    b.Navigation("Totp");
+
+                    b.Navigation("WebAuthnDevices");
                 });
 #pragma warning restore 612, 618
         }

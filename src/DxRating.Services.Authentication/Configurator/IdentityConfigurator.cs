@@ -3,6 +3,7 @@ using System.Text;
 using DxRating.Common.Extensions;
 using DxRating.Services.Authentication.Constants;
 using DxRating.Services.Authentication.Enums;
+using Fido2NetLib;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -174,7 +175,7 @@ internal static class IdentityConfigurator
                         o.CallbackPath = $"/auth/callback/{oauth.Name}";
 
                         o.ClaimActions.MapCustomJson(AuthenticationConstants.AuthenticationSchemeNameClaimType, _ => oauth.Name);
-                        o.ClaimActions.MapCustomJson(AuthenticationConstants.AuthenticationProviderTypeClaimType, _ => IdentityProviderType.OAuth.ToString());
+                        o.ClaimActions.MapCustomJson(AuthenticationConstants.AuthenticationProviderTypeClaimType, _ => nameof(IdentityProviderType.OAuth));
                     });
                     break;
                 case OAuthProviderType.Discord:
@@ -186,7 +187,7 @@ internal static class IdentityConfigurator
                         o.CallbackPath = $"/auth/callback/{oauth.Name}";
 
                         o.ClaimActions.MapCustomJson(AuthenticationConstants.AuthenticationSchemeNameClaimType, _ => oauth.Name);
-                        o.ClaimActions.MapCustomJson(AuthenticationConstants.AuthenticationProviderTypeClaimType, _ => IdentityProviderType.OAuth.ToString());
+                        o.ClaimActions.MapCustomJson(AuthenticationConstants.AuthenticationProviderTypeClaimType, _ => nameof(IdentityProviderType.OAuth));
                     });
                     break;
                 case OAuthProviderType.Google:
@@ -198,13 +199,32 @@ internal static class IdentityConfigurator
                         o.CallbackPath = $"/auth/callback/{oauth.Name}";
 
                         o.ClaimActions.MapCustomJson(AuthenticationConstants.AuthenticationSchemeNameClaimType, _ => oauth.Name);
-                        o.ClaimActions.MapCustomJson(AuthenticationConstants.AuthenticationProviderTypeClaimType, _ => IdentityProviderType.OAuth.ToString());
+                        o.ClaimActions.MapCustomJson(AuthenticationConstants.AuthenticationProviderTypeClaimType, _ => nameof(IdentityProviderType.OAuth));
                     });
                     break;
                 default:
                     throw new InvalidOperationException($"Unknown OAuth provider type: {oauth.Type}");
             }
         }
+
+        // WebAuthn
+        var webAuthn = authenticationOptions.WebAuthn;
+        if (webAuthn.Enable)
+        {
+            var fido2Configuration = new Fido2Configuration
+            {
+                ServerName = webAuthn.ServerName,
+                ServerIcon = webAuthn.ServerIcon,
+                ServerDomain = webAuthn.ServerDomain,
+                Origins = webAuthn.Origins.ToHashSet()
+            };
+            var fido2 = new Fido2(fido2Configuration);
+
+            builder.Services.AddSingleton<IFido2, Fido2>(_ => fido2);
+        }
+
+        // Sign in with Ethereum (ERC-4361)
+        // Nothing need to be configured
     }
 
     private static void ConfigureAuthorization(this IHostApplicationBuilder builder)
@@ -216,6 +236,16 @@ internal static class IdentityConfigurator
         authorizationBuilder.AddDefaultPolicy("Default", o =>
         {
             o.AddAuthenticationSchemes(AuthenticationConstants.BearerAuthenticationScheme).RequireAuthenticatedUser();
+        });
+
+        authorizationBuilder.AddPolicy(AuthenticationConstants.SessionExchangePolicy, o =>
+        {
+            o.AddAuthenticationSchemes(AuthenticationConstants.SessionExchangeCookieScheme).RequireAuthenticatedUser();
+        });
+
+        authorizationBuilder.AddPolicy(AuthenticationConstants.LocalMfaPolicy, o =>
+        {
+            o.AddAuthenticationSchemes(AuthenticationConstants.LocalMfaCookieScheme).RequireAuthenticatedUser();
         });
     }
 }

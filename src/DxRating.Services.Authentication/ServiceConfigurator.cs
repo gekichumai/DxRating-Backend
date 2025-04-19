@@ -1,3 +1,4 @@
+using DxRating.Services.Authentication.Abstract;
 using DxRating.Services.Authentication.Configurator;
 using DxRating.Services.Authentication.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,9 +12,8 @@ public static class ServiceConfigurator
     {
         builder.ConfigureIdentity();
 
-        builder.Services.AddScoped<LocalAuthenticationService>();
         builder.Services.AddScoped<SessionService>();
         builder.Services.AddScoped<TokenService>();
-        builder.Services.AddScoped<UserService>();
+        builder.Services.AddScoped<IUserService, UserService>();
     }
 }

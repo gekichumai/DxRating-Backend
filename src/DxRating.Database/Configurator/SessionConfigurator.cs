@@ -13,9 +13,5 @@ public class SessionConfigurator : IEntityTypeConfiguration<Session>
         builder.HasIndex(x => x.RefreshToken);
         builder.HasIndex(x => x.AccessTokenExpiresAt);
         builder.HasIndex(x => x.RefreshTokenExpiresAt);
-
-        builder.HasOne(x => x.User)
-            .WithMany()
-            .HasForeignKey(x => x.UserId);
     }
 }

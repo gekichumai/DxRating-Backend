@@ -19,10 +19,29 @@ public partial class Endpoints : IEndpointMapper
             .HasApiVersion(1)
             .WithTags("Authentication");
 
+        // General
         authGroup.MapGet("/providers", GetProviders);
-        authGroup.MapGet("/oauth/{provider}", InitiateAuthentication);
+        authGroup.MapGet("/login/{provider}", InitiateAuthentication);
 
-        MapLocalAuthenticationEndpoints(authGroup);
+        // Erc4361
+        var erc4361Group = authGroup.MapGroup("/erc4361");
+        erc4361Group.MapGet("/challenge", GetErc4361Challenge);
+        erc4361Group.MapPost("/verify", VerifyErc4361SignatureAsync);
+
+        // Local
+        authGroup.MapPost("/register", RegisterAsync).RequireTurnstile("Register");
+        authGroup.MapPost("/login", LoginAsync).RequireTurnstile("Login");
+
+        // Session
+        var sessionGroup = authGroup.MapGroup("/session");
+        sessionGroup.MapGet("/", GetSessionAsync);
+
+        // WebAuthn
+        var webAuthnGroup = authGroup.MapGroup("/webauthn");
+        webAuthnGroup.MapGet("/attestation", AttestationAsync).RequireAuthorization();
+        webAuthnGroup.MapPost("/attestation", AttestationVerifyAsync);
+        webAuthnGroup.MapGet("/assertion", AssertionAsync);
+        webAuthnGroup.MapPost("/assertion", AssertionVerifyAsync);
     }
 
     [EndpointDescription("Get authentication providers")]
@@ -96,6 +115,28 @@ public partial class Endpoints : IEndpointMapper
             DisplayName = "Local",
             Type = IdentityProviderType.Local
         });
+
+        // WebAuthn
+        if (options.WebAuthn.Enable)
+        {
+            result.Add(new AuthenticationProviderDto
+            {
+                Name = "webauthn",
+                DisplayName = "WebAuthn",
+                Type = IdentityProviderType.WebAuthn
+            });
+        }
+
+        // Erc4361
+        if (options.Erc4361.Enable)
+        {
+            result.Add(new AuthenticationProviderDto
+            {
+                Name = "erc4361",
+                DisplayName = "Erc4361",
+                Type = IdentityProviderType.Erc4361
+            });
+        }
 
         return result;
     }

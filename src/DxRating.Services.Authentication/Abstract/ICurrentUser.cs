@@ -20,7 +20,5 @@ public interface ICurrentUser
     public Language Language { get; }
 
     public Task<User?> GetUserAsync();
-    public IQueryable<User> GetUserQueryable();
     public Task AuthenticateAsync(string authenticationScheme);
-    public Task SignOutAsync(string authenticationScheme);
 }

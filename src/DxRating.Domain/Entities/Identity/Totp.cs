@@ -1,27 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DxRating.Domain.Enums;
 
 namespace DxRating.Domain.Entities.Identity;
 
-[Table("token")]
-public record Token
+[Table("totp")]
+public record Totp
 {
     [Key]
     [Column("id")]
     public Guid Id { get; set; }
 
+    [Column("secret")]
+    public string Secret { get; set; } = null!;
+
     [Column("user_id")]
     public Guid UserId { get; set; }
-
-    [Column("token_type")]
-    public TokenType TokenType { get; set; }
-
-    [Column("verification_token")]
-    public string VerificationToken { get; set; } = string.Empty;
-
-    [Column("expires_at")]
-    public DateTimeOffset ExpiresAt { get; set; }
 
     // Relations
     public User User { get; set; } = null!;

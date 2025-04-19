@@ -20,11 +20,30 @@ namespace DxRating.Database.Migrations
                     email = table.Column<string>(type: "text", nullable: false),
                     password = table.Column<string>(type: "text", nullable: true),
                     email_confirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    email_confirmed_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    email_confirmed_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    mfa_enabled = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_user", x => x.user_id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "crypto_wallet",
+                columns: table => new
+                {
+                    address = table.Column<string>(type: "text", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_crypto_wallet", x => x.address);
+                    table.ForeignKey(
+                        name: "FK_crypto_wallet_user_user_id",
+                        column: x => x.user_id,
+                        principalTable: "user",
+                        principalColumn: "user_id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -75,22 +94,69 @@ namespace DxRating.Database.Migrations
                 name: "token",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    TokenType = table.Column<int>(type: "integer", nullable: false),
-                    VerificationToken = table.Column<string>(type: "text", nullable: false),
-                    ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    token_type = table.Column<string>(type: "text", nullable: false),
+                    verification_token = table.Column<string>(type: "text", nullable: false),
+                    expires_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_token", x => x.Id);
+                    table.PrimaryKey("PK_token", x => x.id);
                     table.ForeignKey(
-                        name: "FK_token_user_UserId",
-                        column: x => x.UserId,
+                        name: "FK_token_user_user_id",
+                        column: x => x.user_id,
                         principalTable: "user",
                         principalColumn: "user_id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "totp",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    secret = table.Column<string>(type: "text", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_totp", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_totp_user_user_id",
+                        column: x => x.user_id,
+                        principalTable: "user",
+                        principalColumn: "user_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "webauthn_device",
+                columns: table => new
+                {
+                    descriptor_id = table.Column<byte[]>(type: "bytea", nullable: false),
+                    public_key = table.Column<byte[]>(type: "bytea", nullable: false),
+                    user_handle = table.Column<byte[]>(type: "bytea", nullable: false),
+                    aa_guid = table.Column<Guid>(type: "uuid", nullable: false),
+                    signature_counter = table.Column<long>(type: "bigint", nullable: false),
+                    cred_type = table.Column<string>(type: "text", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_webauthn_device", x => x.descriptor_id);
+                    table.ForeignKey(
+                        name: "FK_webauthn_device_user_user_id",
+                        column: x => x.user_id,
+                        principalTable: "user",
+                        principalColumn: "user_id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_crypto_wallet_user_id",
+                table: "crypto_wallet",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_session_access_token",
@@ -128,29 +194,43 @@ namespace DxRating.Database.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_token_ExpiresAt",
+                name: "IX_token_expires_at",
                 table: "token",
-                column: "ExpiresAt");
+                column: "expires_at");
 
             migrationBuilder.CreateIndex(
-                name: "IX_token_UserId",
+                name: "IX_token_user_id",
                 table: "token",
-                column: "UserId");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_token_VerificationToken",
+                name: "IX_token_verification_token",
                 table: "token",
-                column: "VerificationToken");
+                column: "verification_token");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_totp_user_id",
+                table: "totp",
+                column: "user_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_user_email",
                 table: "user",
                 column: "email");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_webauthn_device_user_id",
+                table: "webauthn_device",
+                column: "user_id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "crypto_wallet");
+
             migrationBuilder.DropTable(
                 name: "session");
 
@@ -159,6 +239,12 @@ namespace DxRating.Database.Migrations
 
             migrationBuilder.DropTable(
                 name: "token");
+
+            migrationBuilder.DropTable(
+                name: "totp");
+
+            migrationBuilder.DropTable(
+                name: "webauthn_device");
 
             migrationBuilder.DropTable(
                 name: "user");

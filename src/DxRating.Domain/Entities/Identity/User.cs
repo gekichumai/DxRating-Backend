@@ -23,6 +23,14 @@ public record User
     [Column("email_confirmed_at")]
     public DateTimeOffset EmailConfirmedAt { get; set; }
 
-    // Relations
+    // MFA
+    [Column("mfa_enabled")]
+    public bool MfaEnabled { get; set; }
+
+    // Relation
+    public List<CryptoWallet> CryptoWallets { get; set; } = [];
+    public List<Session> Sessions { get; set; } = [];
     public List<SocialLogin> SocialLogins { get; set; } = [];
+    public List<WebAuthnDevice> WebAuthnDevices { get; set; } = [];
+    public Totp? Totp { get; set; }
 }
